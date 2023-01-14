@@ -14,6 +14,7 @@ import io.ktor.utils.io.errors.*
 
 class KtorTranslateClient(
     private val httpClient: HttpClient
+
 ): TranslateClient {
 
     override suspend fun translate(
