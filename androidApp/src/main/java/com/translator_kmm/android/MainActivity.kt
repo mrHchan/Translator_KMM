@@ -6,18 +6,28 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Shapes
+import androidx.compose.material.Surface
+import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.translator_kmm.Greeting
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.translator_kmm.android.translate.presentation.AndroidTranslateViewModel
+import com.translator_kmm.android.translate.presentation.Routes
+import com.translator_kmm.android.translate.presentation.TranslateScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun TranslatorTheme(
@@ -83,7 +93,7 @@ fun TranslatorTheme(
         content = content
     )
 }
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,9 +104,26 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
+                    TranslateRoot()
                 }
             }
         }
     }
 }
-
+@Composable
+fun TranslateRoot(){
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = Routes.TRANSLATE
+    ) {
+        composable(route = Routes.TRANSLATE) {
+            val viewModel = hiltViewModel<AndroidTranslateViewModel>()
+            val state by viewModel.state.collectAsState()
+            TranslateScreen(
+                state = state,
+                onEvent = viewModel::onEvent
+            )
+        }
+    }
+}
